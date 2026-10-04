@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Medical Store Inventory and Refill Agent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>AI-Based Intelligent Medical Store Inventory and Refill Agent</h1>
+<p>Live demo: the agent finds what to reorder, plans the delivery route, and picks suppliers under rules.</p>
+
+<div class="tabs" role="tablist">
+<button role="tab" aria-selected="true" data-t="t1">Refill agent</button>
+<button role="tab" aria-selected="false" data-t="t2">Delivery route: BFS vs A*</button>
+<button role="tab" aria-selected="false" data-t="t3">Supplier assignment: CSP</button>
+</div>
+
+<section id="t1" class="panel">
+<h2>Intelligent agent: perceive, decide, act</h2>
+<p>For each medicine the agent reads stock and demand, applies reorder point = daily demand × lead time + safety stock, then acts.</p>
+<div class="bar"><button class="btn" id="runAgent">Run agent cycle</button><button class="btn alt" id="toRoute" disabled>Plan delivery route</button></div>
+<div class="wrap"><table><thead><tr><th>Medicine</th><th>Stock</th><th>Demand/day</th><th>Lead (days)</th><th>Reorder point</th><th>Days to expiry</th><th>Decision</th></tr></thead><tbody id="inv"></tbody></table></div>
+<ul class="log" id="log"><li>Press "Run agent cycle" to start.</li></ul>
+</section>
+
+<section id="t2" class="panel" hidden>
+<h2>Problem solving: find the delivery path</h2>
+<p>State = grid cell, goal = store, actions = move up/down/left/right. Click any cell to add or remove a road block, then compare both searches.</p>
+<div class="bar"><button class="btn" id="bfs">Run BFS</button><button class="btn" id="astar">Run A*</button><button class="btn alt" id="clr">Reset map</button></div>
+<canvas id="cv" width="660" height="360" aria-label="Delivery grid map"></canvas>
+<div class="key"><span><i style="background:var(--pri)"></i>Final path</span><span><i style="background:var(--vis)"></i>Explored</span><span><i style="background:var(--fr)"></i>Frontier</span><span><i style="background:var(--wall)"></i>Blocked road</span><span>S = supplier, M = medical store</span></div>
+<div class="stats" id="stats"><div class="stat">Run a search to see how many cells each one explores.</div></div>
+</section>
+
+<section id="t3" class="panel" hidden>
+<h2>Constraint satisfaction with backtracking</h2>
+<p>Variables = the 5 items to reorder. Domain = suppliers A, B, C. Constraints: cold-chain, Schedule H licence, supplier capacity, total budget ₹3,500.</p>
+<dl>
+<dt>A MediLine</dt><dd>cold-chain, licensed, max 2 items, full price</dd>
+<dt>B HealthFirst</dt><dd>no cold-chain, licensed, max 2 items, 10% cheaper</dd>
+<dt>C QuickPharma</dt><dd>no cold-chain, not licensed, max 3 items, 20% cheaper</dd>
+</dl>
+<div class="bar"><button class="btn" id="solve">Solve with backtracking</button></div>
+<div class="wrap"><table><thead><tr><th>Item</th><th>Needs</th><th>Supplier</th><th>Cost</th></tr></thead><tbody id="csp"></tbody></table></div>
+<div class="stats" id="cstats"></div>
+<ul class="log" id="clog"><li>Press "Solve" to watch the agent try, fail and backtrack.</li></ul>
+</section>
+
+<div class="panel" style="margin-top:16px">
+<h2>Where each concept is used</h2>
+<dl>
+<dt>Intelligent agent</dt><dd>Perceives stock and sales, decides what to reorder, acts by drafting orders.</dd>
+<dt>Problem solving</dt><dd>Delivery is formulated as states, actions, goal test and path cost.</dd>
+<dt>BFS</dt><dd>Uninformed search: fewest steps, but explores almost every cell.</dd>
+<dt>A* search</dt><dd>f(n) = g(n) + h(n) with Manhattan distance: same optimal path, fewer cells explored.</dd>
+<dt>CSP</dt><dd>Supplier choice as variables, domains and constraints.</dd>
+<dt>Backtracking</dt><dd>Undo the last assignment when a constraint breaks, then try the next supplier.</dd>
+</dl>
+</div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
